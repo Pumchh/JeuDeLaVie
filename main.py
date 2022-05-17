@@ -38,75 +38,54 @@ def setState(map:list, x:int, y:int) -> None:
         map[x][y] = 0
 
 
-"""       
-def verifAroundBlock(map:list, x:int, y:int, hight:int=1, width:int=1) -> int:
-    coordoX = x - width 
-    coordoY = y - hight 
+def verifAroundBlock(map:list, x:int, y:int, width:int=1, height:int=1) -> int:
+    """
+    :param map: map where you set the new state
+    :param x: coordinate x
+    :param y: coordinate y
+    :param width: width to analyse to the left and the right of the block
+    :param height: height to analyse above and below the block
+    :return: int: block around the block who are on state 1
+    """
+    coordoX = x - width
+    coordoY = y - height
     count = 0
-  
-    for i in range(hight*2+1):
-        coordoY += 1
-        coordoX = x - width
+
+    for i in range(height*2+1):
+        coordoY = y - height
         for j in range(width*2+1):
-            coordoX += 1
-            if coordoX >= 0 and coordoY >= 0 and coordoX < XMap and coordoY < YMap:
-                if map[coordoX][coordoY] == 1 and i != j:
+
+            if 0 <= coordoX < XMap and 0 <= coordoY < YMap:
+                if map[coordoX][coordoY] == 1:
                     count += 1
-    return count
-"""
+            coordoY += 1
+        coordoX += 1
 
-# AJouter conditions bords du tableau
-def verifAroundBlock(map:list, x:int, y:int) -> int:
-    counter = 0
-
-    if y > 1 and x > 1:
-        if map[y - 1][x - 1] == 1:
-            counter += 1
-
-    if x > 1:
-        if map[y][x - 1] == 1:
-            counter += 1
-
-    if y < YMap-1 and x > 1:
-        if map[y + 1][x - 1] == 1:
-            counter += 1
-
-    if y > 1:
-        if map[y - 1][x] == 1:
-            counter += 1
-
-    if y < YMap-1:
-        if map[y + 1][x] == 1:
-            counter += 1
-
-    if y > 1 and x < XMap-1:
-        if map[y - 1][x + 1] == 1:
-            counter += 1
-
-    if x < XMap-1:
-        if map[y][x + 1] == 1:
-            counter += 1
-
-    if x < XMap-1:
-        if map[y + 1][x + 1] == 1:
-            counter += 1
-
-    return counter
+    if map[x][y] == 1:
+        return count - 1
+    else:
+        return count
 
 
-def rules(map, x, y):
-
+def rules(map:list, x:int, y:int, comesLife:list=(3), stayAlive:list=(2, 3), analysisX:int=1, analysisY:int=1) -> None:
+    """
+    :param map: map to apply the rule
+    :param x: coordinate x
+    :param y: coordinate y
+    :param comesLife: number of alive block needed to born
+    :param stayAlive: number of alive boccks needed to stay alive
+    :param analysisX: width to analyse to the left and the right of the block
+    :param analysisY: height to analyse above and below the block
+    :return: None
+    """
     if map[x][y] == 0:
-        if verifAroundBlock(map, x, y) == 3:
+        if verifAroundBlock(map, x, y, analysisX, analysisY) in comesLife:
             setState(map, x, y)
 
     elif map[x][y] == 1:
-        if verifAroundBlock(map, x, y) <= 2 or verifAroundBlock(map, x, y) >= 4:
+        if verifAroundBlock(map, x, y, analysisX, analysisY) not in stayAlive:
             setState(map, x, y)
 
-        elif verifAroundBlock(map, x, y) == 2 or verifAroundBlock(map, x, y) == 3:
-            #pas de changement
-            pass
     else:
         print("Erreur, ne sait pas quoi faire aux coord ({},{})".format(x, y))
 
